@@ -10,35 +10,43 @@ export default function Home() {
   const ALL_TIERS = ["Start", "Speed", "Super", "Star"];
 
   const TIER_CONFIG = {
-    Start: {
-      icon: "🚩",
-      bg: "#f1f5f9",
-      border: "#cbd5f5",
-      color: "#475569",
-      range: "0 - 9,999 บาท",
-    },
-    Speed: {
-      icon: "⚡",
-      bg: "#e0f2fe",
-      border: "#7dd3fc",
-      color: "#0284c7",
-      range: "10,000 - 49,999 บาท",
-    },
-    Super: {
-      icon: "🚀",
-      bg: "#fef9c3",
-      border: "#fde047",
-      color: "#ca8a04",
-      range: "50,000 - 199,999 บาท",
-    },
-    Star: {
-      icon: "⭐",
-      bg: "#ede9fe",
-      border: "#c4b5fd",
-      color: "#7c3aed",
-      range: "200,000+ บาท",
-    },
-  };
+  Start: {
+    icon: "🚩",
+    min: 0,
+    max: 9999,
+    bg: "#f1f5f9",
+    border: "#cbd5f5",
+    color: "#475569",
+    range: "0 - 9,999 บาท",
+  },
+  Speed: {
+    icon: "⚡",
+    min: 10000,
+    max: 49999,
+    bg: "#e0f2fe",
+    border: "#7dd3fc",
+    color: "#0284c7",
+    range: "10,000 - 49,999 บาท",
+  },
+  Super: {
+    icon: "🚀",
+    min: 50000,
+    max: 199999,
+    bg: "#fef9c3",
+    border: "#fde047",
+    color: "#ca8a04",
+    range: "50,000 - 199,999 บาท",
+  },
+  Star: {
+    icon: "⭐",
+    min: 200000,
+    max: 9999999,
+    bg: "#ede9fe",
+    border: "#c4b5fd",
+    color: "#7c3aed",
+    range: "200,000+ บาท",
+  },
+};
 
   const [phone, setPhone] = useState("");
   const [user, setUser] = useState(null);
@@ -106,6 +114,8 @@ export default function Home() {
     setUser(data);
   };
 
+  
+
   return (
     <>
       <style>{`
@@ -133,6 +143,18 @@ export default function Home() {
   font-family: 'Prompt', sans-serif;
 
   padding: 40px 20px 56px;
+}
+
+.mainlogo{
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.mainlogo img{
+  width: 120px;
+  height: auto;
 }
 
 .searchBox{
@@ -227,7 +249,7 @@ export default function Home() {
         .profileCard {
           background: white; border-radius: 20px; padding: 24px 28px;
           display: flex; align-items: center; justify-content: space-between;
-          margin-bottom: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+          margin-bottom: 18px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);
           gap: 20px; flex-wrap: wrap;
         }
         .profileCard img {
@@ -236,15 +258,30 @@ export default function Home() {
           box-shadow: 0 4px 14px rgba(0,0,0,0.15);
         }
         .profileCard > div:nth-child(2) { flex: 1; min-width: 140px; }
-        .profileCard h2 { font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-        .profileCard > div:nth-child(2) > p { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+        .profileCard h2 { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+        .profileCard > div:nth-child(2) > p { font-size: 18px; font-weight: 600; color: #64748b; margin-bottom: 10px; }
 
         .tier {
-          display: inline-block;
-          background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
-          color: white !important; padding: 6px 14px !important;
-          border-radius: 20px !important; font-size: 13px; font-weight: 600;
-          box-shadow: 0 3px 10px rgba(59,130,246,0.3); margin-top: 5px;
+          display: inline-flex;
+          align-items: center;
+          
+          gap: 6px;
+
+          background: linear-gradient(135deg, #2563eb, #3b82f6);
+          color: white;
+
+          padding: 10px 18px;
+          border-radius: 999px;
+
+          font-size: 20px;
+          font-weight: 700;
+          letter-spacing: 0.3px;
+
+          box-shadow:
+            0 4px 12px rgba(37, 99, 235, 0.35),
+            inset 0 1px 0 rgba(255,255,255,0.3);
+
+          margin-top: 16px;
         }
 
         .total { text-align: right; }
@@ -447,12 +484,16 @@ export default function Home() {
       `}</style>
 
       <div className="page">
+        
         {/* Search Box */}
 
+        <div className="mainlogo">
+  <img src="/logo.png" alt="JKnowledge Logo" />
+</div>
         {!user && (
           <div className="searchBox">
             <div className="searchBox-logo">
-              <img src="/logo.png" alt="Jsuper7 Logo" />
+              <img src="/jsuper7logo.png" alt="Jsuper7 Logo" />
             </div>
             <div className="searchBox-title">ตรวจสอบข้อมูลสมาชิก</div>
             <div className="searchBox-sub">JSUPER7 Membership</div>
@@ -479,14 +520,12 @@ export default function Home() {
             {/* Profile */}
 
             <div className="profileCard">
-              <img src={user.profile} alt="profile" />
-
               <div>
                 <h2>{user.fullname}</h2>
 
-                <p>📱 {user.phone}</p>
+                <p>📞 {user.phone}</p>
 
-                <div className="tier">⚡ ระดับ {user.tier}</div>
+                <div className="tier"> ระดับ {user.tier}</div>
               </div>
 
               <div className="total">
@@ -516,7 +555,7 @@ export default function Home() {
 
               <div className="card">
                 <img src="/logo_shopee.png" alt="Shopee" />
-                <h3>หนังสือเตรียมสอบมหาลัย</h3>
+                <h3>JKnowledge Shop</h3>
                 <p>(Shopee)</p>
 
                 <h2>฿{user.shopee}</h2>
