@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import TierProgress from "./components/TierProgress";
 
 import Swal from "sweetalert2";
 
@@ -10,43 +11,43 @@ export default function Home() {
   const ALL_TIERS = ["Start", "Speed", "Super", "Star"];
 
   const TIER_CONFIG = {
-  Start: {
-    icon: "🚩",
-    min: 0,
-    max: 9999,
-    bg: "#f1f5f9",
-    border: "#cbd5f5",
-    color: "#475569",
-    range: "0 - 9,999 บาท",
-  },
-  Speed: {
-    icon: "⚡",
-    min: 10000,
-    max: 49999,
-    bg: "#e0f2fe",
-    border: "#7dd3fc",
-    color: "#0284c7",
-    range: "10,000 - 49,999 บาท",
-  },
-  Super: {
-    icon: "🚀",
-    min: 50000,
-    max: 199999,
-    bg: "#fef9c3",
-    border: "#fde047",
-    color: "#ca8a04",
-    range: "50,000 - 199,999 บาท",
-  },
-  Star: {
-    icon: "⭐",
-    min: 200000,
-    max: 9999999,
-    bg: "#ede9fe",
-    border: "#c4b5fd",
-    color: "#7c3aed",
-    range: "200,000+ บาท",
-  },
-};
+    Start: {
+      icon: "🚩",
+      min: 0,
+      max: 9999,
+      bg: "#f1f5f9",
+      border: "#cbd5f5",
+      color: "#475569",
+      range: "0 - 9,999 บาท",
+    },
+    Speed: {
+      icon: "⚡",
+      min: 10000,
+      max: 49999,
+      bg: "#e0f2fe",
+      border: "#7dd3fc",
+      color: "#0284c7",
+      range: "10,000 - 49,999 บาท",
+    },
+    Super: {
+      icon: "🚀",
+      min: 50000,
+      max: 199999,
+      bg: "#fef9c3",
+      border: "#fde047",
+      color: "#ca8a04",
+      range: "50,000 - 199,999 บาท",
+    },
+    Star: {
+      icon: "⭐",
+      min: 200000,
+      max: 9999999,
+      bg: "#ede9fe",
+      border: "#c4b5fd",
+      color: "#7c3aed",
+      range: "200,000+ บาท",
+    },
+  };
 
   const [phone, setPhone] = useState("");
   const [user, setUser] = useState(null);
@@ -107,14 +108,50 @@ export default function Home() {
       icon: "success",
       title: "พบข้อมูลสมาชิก",
       text: "กำลังเข้าสู่หน้าข้อมูลสมาชิก",
-      timer: 1500,
+      timer: 800,
       showConfirmButton: false,
     });
 
     setUser(data);
   };
 
-  
+  const getTierInfo = (totalRaw = 0) => {
+    // แปลง "5,665.79" → 5665.79
+    const total =
+      typeof totalRaw === "string"
+        ? parseFloat(totalRaw.replace(/,/g, ""))
+        : Number(totalRaw);
+
+    const tiers = Object.keys(TIER_CONFIG);
+    let current = tiers[0];
+    let next = null;
+
+    for (let i = 0; i < tiers.length; i++) {
+      const tierName = tiers[i];
+      const tier = TIER_CONFIG[tierName];
+
+      if (total >= tier.min && total <= tier.max) {
+        current = tierName;
+        next = tiers[i + 1] || null;
+        break;
+      }
+    }
+
+    const currentTier = TIER_CONFIG[current];
+    const nextTier = next ? TIER_CONFIG[next] : null;
+
+    let progress = 100;
+    let remaining = 0;
+
+    if (nextTier) {
+      const range = nextTier.min - currentTier.min;
+      progress = ((total - currentTier.min) / range) * 100;
+      progress = Math.max(0, Math.min(progress, 100));
+      remaining = Math.max(nextTier.min - total, 0);
+    }
+
+    return { current, next, progress, remaining, tierData: currentTier };
+  };
 
   return (
     <>
@@ -484,16 +521,12 @@ export default function Home() {
       `}</style>
 
       <div className="page">
-        
         {/* Search Box */}
 
-        <div className="mainlogo">
-  <img src="/logo.png" alt="JKnowledge Logo" />
-</div>
         {!user && (
           <div className="searchBox">
             <div className="searchBox-logo">
-              <img src="/jsuper7logo.png" alt="Jsuper7 Logo" />
+              <img src="/jsuper7_jknowlogo.png" alt="Jsuper7 Logo" />
             </div>
             <div className="searchBox-title">ตรวจสอบข้อมูลสมาชิก</div>
             <div className="searchBox-sub">JSUPER7 Membership</div>
@@ -520,12 +553,12 @@ export default function Home() {
             {/* Profile */}
 
             <div className="profileCard">
-              <div>
+              <div style={{ flex: 1, minWidth: 140 }}>
                 <h2>{user.fullname}</h2>
-
                 <p>📞 {user.phone}</p>
-
                 <div className="tier"> ระดับ {user.tier}</div>
+
+                
               </div>
 
               <div className="total">
@@ -533,6 +566,13 @@ export default function Home() {
                 <h1>฿{user.total_sale}</h1>
               </div>
             </div>
+
+            {/* Progress to next tier */}
+                <TierProgress
+  totalSale={user.total_sale}
+  getTierInfo={getTierInfo}
+  TIER_CONFIG={TIER_CONFIG}
+/>
 
             {/* Sale Cards */}
 
