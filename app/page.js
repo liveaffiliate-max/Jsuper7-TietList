@@ -255,8 +255,9 @@ export default function Home() {
           box-shadow: 0 4px 14px rgba(0,0,0,0.15);
         }
         .profileCard > div:nth-child(2) { flex: 1; min-width: 140px; }
-        .profileCard h2 { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
-        .profileCard > div:nth-child(2) > p { font-size: 18px; font-weight: 600; color: #64748b; margin-bottom: 10px; }
+        .profileCard h2 { font-size: 24px; font-weight: 800; color: #000000; margin-bottom: 4px; }
+        .profileCard p {color: #000000;}
+        .profileCard > div:nth-child(2) > p { font-size: 18px; font-weight: 600; color: #000000; margin-bottom: 10px; }
 
         .tier {
           display: inline-flex;

@@ -2,7 +2,8 @@ import { google } from "googleapis";
 
 export async function POST(req) {
   try {
-    const { phone } = await req.json();
+
+    const { username, password } = await req.json();
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -19,40 +20,36 @@ export async function POST(req) {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: "'ลงเว็บ ยอดเดือน ก.พ.'!A:N",
+      range: "admin_login!A:B",
     });
 
     const rows = response.data.values || [];
 
-    // หา row ที่เบอร์ตรงกัน (คอลัมน์ D = index 3)
-    const user = rows.find((row) => row[3] === phone);
+    // หา admin ที่ username / password ตรงกัน
+    const admin = rows.find(
+      (row) => row[0] === username && row[1] === password
+    );
 
-    if (!user) {
-      return Response.json({ found: false });
+    if (!admin) {
+      return Response.json({
+        success: false,
+        message: "username หรือ password ไม่ถูกต้อง",
+      });
     }
 
     return Response.json({
-      found: true,
-
-      fullname: user[1],
-      nickname: user[2],
-      phone: user[3],
-      line: user[4],
-
-      tiktok: user[5],
-      profile: user[6],
-
-      sale_uni: user[7],
-      sale_exam: user[8],
-      shopee: user[9],
-      tier: user[10],
-
-      total_sale: user[11],
-      
+      success: true,
+      username: admin[0],
     });
 
   } catch (error) {
+
     console.log(error);
-    return Response.json({ error: "server error" });
+
+    return Response.json({
+      success: false,
+      error: "server error",
+    });
+
   }
 }
