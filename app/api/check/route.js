@@ -1,8 +1,24 @@
 import { google } from "googleapis";
 
+const MONTHS = [
+  "Jan","Feb","Mar","Apr","May","Jun",
+  "Jul","Aug","Sep","Oct","Nov","Dec"
+];
+
 export async function POST(req) {
   try {
-    const { phone } = await req.json();
+
+    const { phone, monthOffset = 0 } = await req.json();
+
+    // คำนวณเดือนจาก offset
+    const now = new Date();
+    const targetDate = new Date(
+      now.getFullYear(),
+      now.getMonth() + monthOffset
+    );
+
+    const monthName = MONTHS[targetDate.getMonth()];
+    const sheetName = `Tierlist_${monthName}`;
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -19,7 +35,7 @@ export async function POST(req) {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: "'ลงเว็บ ยอดเดือน มี.ค.'!A:N",
+      range: `${sheetName}!A:N`,
     });
 
     const rows = response.data.values || [];
@@ -33,6 +49,9 @@ export async function POST(req) {
 
     return Response.json({
       found: true,
+
+      month: monthName,
+      sheet: sheetName,
 
       fullname: user[1],
       nickname: user[2],
@@ -48,11 +67,16 @@ export async function POST(req) {
       tier: user[10],
 
       total_sale: user[11],
-      
+
     });
 
   } catch (error) {
+
     console.log(error);
-    return Response.json({ error: "server error" });
+
+    return Response.json({
+      error: "server error"
+    });
+
   }
 }

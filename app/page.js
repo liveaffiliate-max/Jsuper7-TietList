@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TIER_CONFIG, ALL_TIERS } from "./lib/tierConfig"
+import { TIER_CONFIG, ALL_TIERS } from "./lib/tierConfig";
 import TierProgress from "./components/TierProgress";
 import TierListDetail from "./components/TierListdetail";
 
@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 export default function Home() {
   const [error, setError] = useState("");
   const [phone, setPhone] = useState("");
+  const [monthOffset, setMonthOffset] = useState(0);
   const [user, setUser] = useState(null);
 
   const checkUser = async () => {
@@ -47,7 +48,7 @@ export default function Home() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ phone }),
+      body: JSON.stringify({ phone, monthOffset }),
     });
 
     const data = await res.json();
@@ -74,6 +75,26 @@ export default function Home() {
 
     setUser(data);
   };
+
+  const loadMonth = async (offset) => {
+
+  const res = await fetch("/api/check", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      phone,
+      monthOffset: offset,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (data.found) {
+    setUser(data);
+  }
+};
 
   const getTierInfo = (totalRaw = 0) => {
     // แปลง "5,665.79" → 5665.79
