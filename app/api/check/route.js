@@ -19,7 +19,7 @@ export async function POST(req) {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: "'ลงเว็บ ยอดเดือน ก.พ.'!A:N",
+      range: "'ลงเว็บ ยอดเดือน มี.ค.'!A:N",
     });
 
     const rows = response.data.values || [];
